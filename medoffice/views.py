@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+import openai
 from requests import post
 from  .firebase import db
 from medtrackapi.settings import OPENAI_API_KEY
@@ -30,7 +31,7 @@ def add_document(request, collection_name, document_id, content1, content2):
             'content2': content2,
         })
         return JsonResponse({'message': 'Document added successfully'}, status=201)
-    
+      
 @csrf_exempt
 def call_openai(request):
     if request.method == 'POST':
@@ -39,11 +40,13 @@ def call_openai(request):
         max_tokens = json.loads(request.body)['max_tokens']
 
         response = post(
-            'https://api.openai.com/v1/engines/davinci/completions',
+            'https://api.openai.com/v1/completions',
             headers={'Content-Type': 'application/json',
             'Authorization': f'Bearer {OPENAI_API_KEY}',
             },
-            json={'prompt':prompt,
+            json={
+            'model':'text-davinci-002',
+            'prompt':prompt,
                   'max_tokens': max_tokens,
                   'temperature': temperature,
                   },
@@ -55,6 +58,4 @@ def call_openai(request):
             return JsonResponse({'error': response.text}, status=response.status_code)
         
 
-    return JsonResponse({'error': 'Invalid request method'}, status=400)    
-
-    
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
