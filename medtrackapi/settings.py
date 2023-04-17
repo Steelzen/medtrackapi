@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -56,9 +57,49 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'medtrackapi.urls'
 
+# CORS_ORIGIN_ALLOW_ALL = False
+
+# CORS_ALLOW_CREDENTIALS = True
+
+# CORS_ORIGIN_WHITELIST = [
+#     'http://localhost:3000',
+#     'https://localhost:3000',
+
+# ]
+
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:3000',
+#     'https://localhost:3000',
+# ]
+
+
+
+# CSRF_COOKIE_SECURE = False
+# CSRF_COOKIE_HTTPONLY = False
+
+
+# SESSION_COOKIE_SAMESITE = None
+# SESSION_COOKIE_SECURE=False
+
+
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE=False
+CSRF_COOKIE_HTTPONLY = False
+CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_SAMESITE = None
+
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'https://localhost:3000',
 ]
+
+# CSRF_TRUSTED_ORIGINS = [
+#     'http://localhost:3000',
+#     'https://localhost:3000',
+# ]
+
+# CORS_ALLOW_HEADERS = [    'accept',    'accept-encoding',    'authorization',    'content-type',    'dnt',    'origin',    'user-agent',    'x-csrftoken',    'x-requested-with',]
+# CORS_ALLOW_METHODS = [    'DELETE',    'GET',    'OPTIONS',    'PATCH',    'POST',    'PUT',]
 
 TEMPLATES = [
     {

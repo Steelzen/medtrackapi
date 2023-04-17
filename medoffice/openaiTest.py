@@ -12,8 +12,6 @@ def openaiTest():
         max_tokens=7,
     )
 
-    
-    # response = openai.Completion.create(model="gpt-3.5-turbo", prompt="Say this is a test", temperature=0, max_tokens=7)
     print(response)
 
 if __name__ == '__main__':

@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import ensure_csrf_cookie
 import json
 import openai
 from requests import post
@@ -31,6 +33,19 @@ def add_document(request, collection_name, document_id, content1, content2):
             'content2': content2,
         })
         return JsonResponse({'message': 'Document added successfully'}, status=201)
+
+@csrf_exempt
+def add_medistaff(request, collection_name, document_id, user_id, license_number):
+    document_ref = db.collection(collection_name).document(document_id)
+    doc = document_ref.get()
+    if doc.exists:
+        return JsonResponse({'error': 'Document already exists'}, status=400)
+    else:
+        document_ref.set({
+            'user_id':  user_id,
+            'license_number': license_number,
+        })
+        return JsonResponse({'message': 'Document added successfully'}, status=201)    
       
 @csrf_exempt
 def call_openai(request):
