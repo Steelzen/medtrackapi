@@ -34,7 +34,6 @@ def add_document(request, collection_name, document_id, content1, content2):
         })
         return JsonResponse({'message': 'Document added successfully'}, status=201)
 
-@csrf_exempt
 def add_medistaff(request, collection_name, document_id, user_id, license_number):
     document_ref = db.collection(collection_name).document(document_id)
     doc = document_ref.get()
