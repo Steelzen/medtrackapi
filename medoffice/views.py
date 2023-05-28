@@ -34,7 +34,7 @@ def add_document(request, collection_name, document_id, content1, content2):
         })
         return JsonResponse({'message': 'Document added successfully'}, status=201)
 
-def add_medistaff(request, collection_name, document_id, user_id, license_number):
+def add_medistaff(request, collection_name, document_id, user_id, license_number, position, first_name, last_name, address, city, state, zip, phone, role, organisation):
     document_ref = db.collection(collection_name).document(document_id)
     doc = document_ref.get()
     if doc.exists:
@@ -43,6 +43,36 @@ def add_medistaff(request, collection_name, document_id, user_id, license_number
         document_ref.set({
             'user_id':  user_id,
             'license_number': license_number,
+            'position': position,
+            'first_name': first_name,
+            'last_name': last_name,
+            'address': address,
+            'city': city,
+            'state': state,
+            'zip': zip,
+            'phone': phone,
+            'role': role,
+            'organisation': organisation,
+        })
+        return JsonResponse({'message': 'Document added successfully'}, status=201)
+
+
+def add_patient(request, collection_name, document_id, user_id, position, first_name, last_name, address, city, state, zip, phone):
+    document_ref = db.collection(collection_name).document(document_id)
+    doc = document_ref.get()
+    if doc.exists:
+        return JsonResponse({'error': 'Document already exists'}, status=400)
+    else:
+        document_ref.set({
+            'user_id':  user_id,
+            'position': position,
+            'first_name': first_name,
+            'last_name': last_name,
+            'address': address,
+            'city': city,
+            'state': state,
+            'zip': zip,
+            'phone': phone,
         })
         return JsonResponse({'message': 'Document added successfully'}, status=201)    
       
