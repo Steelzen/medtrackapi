@@ -6,7 +6,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 import json
 import openai
 from requests import post
-from  .firebase import db
+from  .firebase import db, firestore
 from medtrackapi.settings import OPENAI_API_KEY
 
 # Create your views here.
@@ -22,17 +22,13 @@ def get_document(request, collection_name, document_id):
     else:
         return JsonResponse({'error': 'Document not found'}, status=404)
     
-def add_document(request, collection_name, document_id, content1, content2):
+def get_patient_list(request, collection_name, document_id):
     document_ref = db.collection(collection_name).document(document_id)
     doc = document_ref.get()
     if doc.exists:
-        return JsonResponse({'error': 'Document already exists'}, status=400)
+        return JsonResponse(doc.to_dict())
     else:
-        document_ref.set({
-            'content1':  content1,
-            'content2': content2,
-        })
-        return JsonResponse({'message': 'Document added successfully'}, status=201)
+        return JsonResponse({'error': 'Document not found'}, status=404)    
 
 def add_medistaff(request, collection_name, document_id, user_id, license_number, position, first_name, last_name, date_of_birth, address, city, state, zip, phone, role, organisation):
     document_ref = db.collection(collection_name).document(document_id)
@@ -76,7 +72,45 @@ def add_patient(request, collection_name, document_id, user_id, position, first_
             'zip': zip,
             'phone': phone,
         })
-        return JsonResponse({'message': 'Document added successfully'}, status=201)    
+        return JsonResponse({'message': 'Document added successfully'}, status=201)
+    
+def register_patient_list(request, collection_name, document_id):
+    document_ref = db.collection(collection_name).document(document_id)
+    doc = document_ref.get()
+    if doc.exists:
+        return JsonResponse({'error': 'Document already exists'}, status=400)
+    else:
+        document_ref.set({
+            'patient_list': [],
+        })
+        return JsonResponse({'message': 'Document added successfully'}, status=201)
+    
+
+def add_patient_on_list(request, collection_name, document_id, patient_id):
+    document_ref = db.collection(collection_name).document(document_id)
+    doc = document_ref.get()
+    if not doc.exists:
+        return JsonResponse({'error': 'Document does not exist'}, status=404)
+    
+    document_ref.update({
+        'patient_list': firestore.ArrayUnion([patient_id]),
+    })
+    
+    return JsonResponse({'message': 'Patient added successfully'}, status=200)
+
+def delete_patient_on_list(request, collection_name, document_id, patient_id):
+    document_ref = db.collection(collection_name).document(document_id)
+    doc = document_ref.get()
+    if not doc.exists:
+        return JsonResponse({'error': 'Document does not exist'}, status=404)
+    
+    document_ref.update({
+        'patient_list': firestore.ArrayRemove([patient_id]),
+    })
+    
+    return JsonResponse({'message': 'Patient deleted successfully'}, status=200)
+
+
       
 @csrf_exempt
 def call_openai(request):
