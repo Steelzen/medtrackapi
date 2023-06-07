@@ -5,11 +5,23 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.csrf import ensure_csrf_cookie
 import json
 import openai
+import traceback
 from requests import post
+from firebase_admin import auth
 from  .firebase import db, firestore
 from medtrackapi.settings import OPENAI_API_KEY
 
 # Create your views here.
+def get_all_users(request):
+    try:
+        users = auth.list_users()
+        user_list = [{'uid': user.uid, 'email': user.email} for user in users.iterate_all()]
+        return JsonResponse(user_list, safe=False)
+    except Exception as e:
+        traceback.print_exc()
+        return JsonResponse({'error': str(e)}, status=500)
+
+
 def get_document_all(request, collection_name):
     docs = db.collection(collection_name).get()
     return JsonResponse({'docs': [doc.to_dict() for doc in docs]})
