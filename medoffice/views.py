@@ -33,14 +33,18 @@ def get_document(request, collection_name, document_id):
         return JsonResponse(doc.to_dict())
     else:
         return JsonResponse({'error': 'Document not found'}, status=404)
-    
+
 def get_patient_list(request, collection_name, document_id):
     document_ref = db.collection(collection_name).document(document_id)
     doc = document_ref.get()
-    if doc.exists:
-        return JsonResponse(doc.to_dict())
-    else:
-        return JsonResponse({'error': 'Document not found'}, status=404)    
+    
+    if not doc.exists:
+        return JsonResponse({'error': 'Document does not exist'}, status=404)
+    
+    patient_list = doc.to_dict().get('patient_list', [])
+    return JsonResponse({'patient_list': patient_list}, status=200)
+
+      
 
 def add_medistaff(request, collection_name, document_id, user_id, license_number, position, first_name, last_name, date_of_birth, address, city, state, zip, phone, role, organisation):
     document_ref = db.collection(collection_name).document(document_id)
