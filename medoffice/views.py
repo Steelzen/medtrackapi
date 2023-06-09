@@ -89,6 +89,29 @@ def add_patient(request, collection_name, document_id, user_id, position, first_
             'phone': phone,
         })
         return JsonResponse({'message': 'Document added successfully'}, status=201)
+
+def add_medication(request, collection_name, document_id, creation_date, data_id, patient_id, medistaff_id, medication_name, dosage_instructions, frequency, start_date, last_refill_date, allergies, special_instructions):
+    document_ref = db.collection(collection_name).document(document_id)
+    doc = document_ref.get()
+    if doc.exists:
+        return JsonResponse({'error': 'Document already exists'}, status=400)
+    else:
+        document_ref.set({
+            'creation_date': creation_date,
+            'data_id':  data_id,
+            'patient_id':  patient_id,
+            'medistaff_id': medistaff_id,
+            'medication_name': medication_name,
+            'dosage_instructions': dosage_instructions,
+            'frequency': frequency,
+            'start_date': start_date,
+            'last_refill_date': last_refill_date,
+            'allergies': allergies,
+            'special_instructions': special_instructions,
+
+        })
+        return JsonResponse({'message': 'Document added successfully'}, status=201)
+
     
 def register_patient_list(request, collection_name, document_id):
     document_ref = db.collection(collection_name).document(document_id)
