@@ -154,21 +154,38 @@ def delete_patient_on_list(request, collection_name, document_id, patient_id):
 @csrf_exempt
 def call_openai(request):
     if request.method == 'POST':
-        prompt = json.loads(request.body)['prompt']
-        temperature = json.loads(request.body)['temperature']
-        max_tokens = json.loads(request.body)['max_tokens']
+        # prompt = json.loads(request.body)['prompt']
+        # temperature = json.loads(request.body)['temperature']
+        # max_tokens = json.loads(request.body)['max_tokens']
+        # medication = data.get('prompt')
+        data = json.loads(request.body)
+        medication = data.get('prompt')  # assuming prompt contains the medication name
+        temperature = data.get('temperature', 0.5)
+        max_tokens = data.get('max_tokens', 512)
+
+        system_prompt = """You are an expert medical writer. Provide a concise but comprehensive overview of the medication specified below:
+        - **Medication name**: __
+        - Use cases
+        - Common side effects
+        - Precautions
+        Answer in no more than 200 words or 5 bullet points per section. Do not expand beyond these constraints."""
+
+        user_text = f"Medication name: {medication}\n\nUse cases:\n- \nCommon side effects:\n- \nPrecautions:\n- \n\nPlease follow format & limits exactly."
 
         response = post(
-            'https://api.openai.com/v1/completions',
-            headers={'Content-Type': 'application/json',
-            'Authorization': f'Bearer {OPENAI_API_KEY}',
-            },
-            json={
-            'model':'text-davinci-002',
-            'prompt':prompt,
-                  'max_tokens': max_tokens,
-                  'temperature': temperature,
-                  },
+                'https://api.openai.com/v1/chat/completions',
+                headers={'Content-Type': 'application/json',
+                'Authorization': f'Bearer {OPENAI_API_KEY}',
+                },
+                json={
+                'model': 'gpt-4.1',
+                'messages': [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_text}
+                ],
+                'temperature': temperature,
+                'max_tokens': max_tokens,
+                },
         )
 
         if response.status_code == 200:
