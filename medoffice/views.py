@@ -154,12 +154,8 @@ def delete_patient_on_list(request, collection_name, document_id, patient_id):
 @csrf_exempt
 def call_openai(request):
     if request.method == 'POST':
-        # prompt = json.loads(request.body)['prompt']
-        # temperature = json.loads(request.body)['temperature']
-        # max_tokens = json.loads(request.body)['max_tokens']
-        # medication = data.get('prompt')
         data = json.loads(request.body)
-        medication = data.get('prompt')  # assuming prompt contains the medication name
+        medication = data.get('prompt') 
         temperature = data.get('temperature', 0.5)
         max_tokens = data.get('max_tokens', 512)
 
